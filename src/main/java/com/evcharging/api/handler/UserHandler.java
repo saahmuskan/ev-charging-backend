@@ -1,6 +1,7 @@
 package com.evcharging.api.handler;
 
 import com.evcharging.api.util.JsonUtil;
+import com.evcharging.api.filter.CorsFilter;
 import com.evcharging.controller.UserController;
 import com.evcharging.dto.UserDTO;
 import com.sun.net.httpserver.HttpExchange;
@@ -9,7 +10,6 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 
 public class UserHandler implements HttpHandler {
     private UserController userController;
@@ -25,11 +25,12 @@ public class UserHandler implements HttpHandler {
         String path = uri.getPath();
         
         // Handle CORS preflight request
-        if (method.equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
-            exchange.sendResponseHeaders(204, -1);
+        try {
+            if (CorsFilter.handlePreflight(exchange)) {
+                return;
+            }
+        } catch (Exception e) {
+            HttpResponseBuilder.sendErrorResponse(exchange, 500, "Error handling preflight request: " + e.getMessage());
             return;
         }
         

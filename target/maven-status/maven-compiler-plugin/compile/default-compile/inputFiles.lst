@@ -1,4 +1,5 @@
 /home/muskan123/ev/src/main/java/com/evcharging/api/handler/BookingHandler.java
+/home/muskan123/ev/src/main/java/com/evcharging/api/filter/CorsFilter.java
 /home/muskan123/ev/src/main/java/com/evcharging/api/util/JsonUtil.java
 /home/muskan123/ev/src/main/java/com/evcharging/controller/VehicleController.java
 /home/muskan123/ev/src/main/java/com/evcharging/dao/BookingDAO.java

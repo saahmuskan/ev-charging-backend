@@ -1,6 +1,7 @@
 package com.evcharging.api.handler;
 
 import com.evcharging.api.util.JsonUtil;
+import com.evcharging.api.filter.CorsFilter;
 import com.evcharging.controller.BookingController;
 import com.evcharging.dto.BookingDTO;
 import com.sun.net.httpserver.HttpExchange;
@@ -23,11 +24,12 @@ public class BookingHandler implements HttpHandler {
         String path = uri.getPath();
         
         // Handle CORS preflight request
-        if (method.equals("OPTIONS")) {
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
-            exchange.sendResponseHeaders(204, -1);
+        try {
+            if (CorsFilter.handlePreflight(exchange)) {
+                return;
+            }
+        } catch (Exception e) {
+            HttpResponseBuilder.sendErrorResponse(exchange, 500, "Error handling preflight request: " + e.getMessage());
             return;
         }
         
